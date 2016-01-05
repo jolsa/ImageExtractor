@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+<head>
+<title>Image Retrieval</title>
+<style>
+	body { font-family: "Segoe UI", "Lucida Grande", Tahoma, sans-serif; font-size: 10pt; }
+	#main { width: 1200px; height: 1200px; }
+	.main { }
+	.images { display: none; }
+</style>
+</head>
+<body>
+	<div id="main">
+		<button id="load" class="main">Load Images</button>
+		<div id="loading" style="display: none;">
+			Loading...<br />
+			<img src="spinner.gif" alt="loading" />
+		</div>
+		<div class="images" id="images">
+			<button id="close" style="margin-bottom: 5px;">Close Images</button>
+			<span style="margin-left: 20px;">Click on an image to remove it</span>
+		</div>
+	</div>
+	<!-- JavaScript and HTML must be in separate files -->
+	<script src="jquery-1.10.2.min.js"></script>
+	<script src="popup.js"></script>
+</body>
+</html>
+
