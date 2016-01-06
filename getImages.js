@@ -1,4 +1,4 @@
-var divs = [];
+var divs = [], loc;
 
 (function ()
 {
@@ -6,27 +6,30 @@ var divs = [];
 
 	function toDiv(img)
 	{
+		var org = img;
 		//	Remove quotes (if any)
 		img = img.replace(/"/g, "");
 		//	If it doesn't start with http...
 		if (!(/^http/i.test(img)))
 		{
 			//	Does it start with // ?
-			if (/\/\//.test(img))
+			if (/^\/\//.test(img))
 			{
 				var p = location.protocol;
 				//	If protocol is not file or http(s), set it to http (and hope for the best)
 				img = (/^(http|file)/i.test(p) ? p : "http:") + img;
 			}
 			//	Does it start with a / ?
-			else if (/\//.test(img))
+			else if (/^\//.test(img))
 				img = location.origin + img;
 			else
 				//	Otherwise, append to current url
 				img = location.href.match(/.*\//)[0] + img;
 		}
-		return '<div><img src="' + img + '" alt="img" title="remove" /></div>';
+		return { html: '<div class="image"><img src="' + img + '" alt="img" title="remove" /></div>', original: org };
 	}
+
+	loc = { protocol: location.protocol, origin: location.origin, href: location.href };
 
 	//	Find all background images and merge with <img>
 	divs = $("*[style]").map(function () { return $(this).css("background-image"); }).get()
@@ -38,4 +41,4 @@ var divs = [];
 })();
 
 //	This is how chrome extensions get back the response:
-divs;
+[divs, loc];

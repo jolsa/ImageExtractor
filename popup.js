@@ -15,7 +15,11 @@ $(function ()
 	function showImages(response)
 	{
 
-		var divs = response[0];
+		var loc = response[0][1];
+		var divs = response[0][0].map(function (e)
+		{
+			return e.html;
+		});
 		//	Get distinct list
 		(function ()
 		{
@@ -65,7 +69,7 @@ $(function ()
 				try
 				{
 					var i = $(this), p = i.parent(), w = i[0].width, h = i[0].height, src = i[0].src;
-					$('<div class="image">' + w + " x " + h + ' [<span/>] <a href="' + src + '">' + src + "</a></div>").prependTo(p);
+					$('<div>' + w + " x " + h + ' [<span/>] <a href="' + src + '">' + src + "</a></div>").prependTo(p);
 					var item = { div: p, size: { w: w, h: h }, ord: ord };
 					divs.push(item);
 				}

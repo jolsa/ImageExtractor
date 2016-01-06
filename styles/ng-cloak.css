@@ -1,2 +1,0 @@
-﻿/*** Use this to prevent flicker when loading angularJs in body (best practice) ***/
-[ng\:cloak], [ng-cloak], .ng-cloak { display: none; }
