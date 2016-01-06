@@ -14,7 +14,22 @@ $(function ()
 
 	function showImages(response)
 	{
+
 		var divs = response[0];
+		//	Get distinct list
+		(function ()
+		{
+			var a = [];
+			divs.forEach(function (e)
+			{
+				var key = e.toLowerCase();
+				if (!a[key])
+					a[key] = e;
+			});
+			divs = [];
+			for (var p in a)
+				divs.push(a[p]);
+		})();
 
 		//	Hide all main elements
 		mainItems.hide();
@@ -27,20 +42,21 @@ $(function ()
 
 		var images = $("img", imgDiv);
 		var imgs = images.get();
-		var toLoad = imgs.length;
-		cnt.text(toLoad);
+		var imageCount = imgs.length;
+		cnt.text(imageCount);
 		(function wait()
 		{
 			//	Wait for images to load
-			if (toLoad = imgs.filter(function (e) { return !e.complete; }).length)
+			if (imageCount = imgs.filter(function (e) { return !e.complete; }).length)
 			{
-				cnt.text(toLoad);
+				cnt.text(imageCount);
 				console.log("waiting");
 				setTimeout(wait, 100);
 				return;
 			}
 
 			loading.hide();
+			cnt.text(imageCount = imgs.length);
 
 			//	Show width x height
 			divs = [];
@@ -49,8 +65,7 @@ $(function ()
 				try
 				{
 					var i = $(this), p = i.parent(), w = i[0].width, h = i[0].height, src = i[0].src;
-					$('<div style="border: 1px solid red;">' + w + " x " + h + " [" + (ord + 1) + '] <a href="' + src + '">' + src + "</a></div>").prependTo(p);
-					p.css("cursor", "pointer")
+					$('<div class="image">' + w + " x " + h + ' [<span/>] <a href="' + src + '">' + src + "</a></div>").prependTo(p);
 					var item = { div: p, size: { w: w, h: h }, ord: ord };
 					divs.push(item);
 				}
@@ -65,6 +80,10 @@ $(function ()
 			{
 				var area = b.size.w * b.size.h - a.size.w * a.size.h;
 				return area || a.ord - b.ord;
+			}).forEach(function (e, ord)
+			{
+				e.div.find("span").text(ord + 1);
+				e.ord = ord;
 			});
 
 			//	Remove items and re-add
@@ -78,6 +97,7 @@ $(function ()
 			imgDiv.find("img, > div > div").click(function ()
 			{
 				$(this).parent().remove();
+				cnt.text(--imageCount);
 			});
 
 			closeButton.click(function ()
