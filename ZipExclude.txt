@@ -1,0 +1,11 @@
+\.git\\
+\.vs\\
+bin\\
+obj\\
+\.gitattributes
+\.gitignore
+440x280\.png
+exclude\.txt
+ImageExtractor\.
+ZipContent\.cmd
+Screenshot-640x400\.png

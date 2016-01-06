@@ -1,31 +1,34 @@
 <!doctype html>
 <html>
 <head>
-<title>Image Retrieval</title>
-<style>
-	body { font-family: "Segoe UI", "Lucida Grande", Tahoma, sans-serif; font-size: 10pt; }
-	#main { width: 1200px; height: 1200px; }
-	.main { }
-	.images { display: none; }
-	.image { cursor: pointer; }
-</style>
+	<title>Image Retrieval</title>
+	<link href="styles/bootstrap.min.css" rel="stylesheet" />
+	<link href="styles/ng-cloak.css" rel="stylesheet" />
+	<style>
+		body { font-family: "Segoe UI", "Lucida Grande", Tahoma, sans-serif; font-size: 10pt; }
+		#main { width: 1200px; height: 1200px; }
+		.main { }
+		.images { display: none; }
+		.image { cursor: pointer; }
+	</style>
 </head>
 <body>
 	<div id="main">
-		<button id="load" class="main">Load Images</button>
+		<button id="load" class="main btn">Load Images</button>
 		<div id="loading" style="display: none;">
 			Loading...<span style="margin-left: 5px;" class="count"></span>&nbsp;image(s)<br />
 			<img src="spinner.gif" alt="loading" />
 		</div>
 		<div class="images" id="images">
-			<button id="close" style="margin-bottom: 5px;">Close Images</button>
+			<button id="close" class="btn">Close Images</button>
 			<span style="margin-left: 5px;" class="count"></span><span>&nbsp;image(s)</span>
 			<span style="margin-left: 20px;">Click on an image to remove it</span>
+			<hr />
 		</div>
 	</div>
 	<!-- JavaScript and HTML must be in separate files -->
-	<script src="jquery-1.10.2.min.js"></script>
+	<script src="scripts/jquery-1.10.2.min.js"></script>
+	<script src="scripts/angular.min.js"></script>
 	<script src="popup.js"></script>
 </body>
 </html>
-

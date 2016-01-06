@@ -110,13 +110,30 @@ $(function ()
 		})();
 	}
 
+	function showError(message)
+	{
+		var msg = $('<div class="alert alert-danger"/>').text(message).appendTo(main);
+		setTimeout(function () { msg.remove(); }, 5000);
+	}
+
 	loadButton.click(function ()
 	{
 		chrome.tabs.query({ active: true, currentWindow: true }, function (tabs)
 		{
-			var id = tabs[0].id;
-			chrome.tabs.executeScript(id, { file: "jquery-1.10.2.min.js" }, function ()
+			var url = tabs[0].url;
+			if (/^chrome/i.test(url))
 			{
+				showError("Cannot load images from chrome:// pages.");
+				return;
+			}
+			var id = tabs[0].id;
+			chrome.tabs.executeScript(id, { file: "scripts/jquery-1.10.2.min.js" }, function ()
+			{
+				if (chrome.runtime.lastError)
+				{
+					showError(chrome.runtime.lastError.message);
+					return;
+				}
 				chrome.tabs.executeScript(id, { file: "getImages.js" }, showImages);
 			});
 		});

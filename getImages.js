@@ -18,6 +18,9 @@ var divs = [];
 				//	If protocol is not file or http(s), set it to http (and hope for the best)
 				img = (/^(http|file)/i.test(p) ? p : "http:") + img;
 			}
+			//	Does it start with a / ?
+			else if (/\//.test(img))
+				img = location.origin + img;
 			else
 				//	Otherwise, append to current url
 				img = location.href.match(/.*\//)[0] + img;
