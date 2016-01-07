@@ -2,16 +2,64 @@
 {
 	"use strict";
 
-	function controller($scope)
+	var imageDiv = $("#images");
+
+	function controller($scope, $filter)
 	{
+		$scope.apply = function ()
+		{
+			if ($scope.$root.$$phase !== "$apply" && $scope.$root.$$phase !== "$digest")
+				$scope.$apply();
+		};
 		$scope.showError = function (message)
 		{
 			$scope.dangerMessage = message;
+			$scope.apply();
 			setTimeout(function ()
 			{
 				$scope.dangerMessage = null;
-				$scope.$apply();
+				$scope.apply();
 			}, 3000);
+		};
+		$scope.openImage = function (item)
+		{
+			chrome.tabs.create({ url: item.img.img, active: false });
+		};
+		$scope.openAll = function ()
+		{
+			if ($scope.imageCount === 0 || $scope.imageCount > 10) return;
+			$scope.imgs.forEach(function (e)
+			{
+				if (!e.hide)
+					chrome.tabs.create({ url: e.img, active: false });
+			});
+		};
+		$scope.saveAll = function ()
+		{
+			var i = 0;
+			var d = $filter("date")(new Date(), "yyyy-MM-dd HH.mm.ss");
+			$scope.imgs.forEach(function (e)
+			{
+				if (!e.hide)
+				{
+					//	Get everything after the last /
+					var m = e.img.match(/.*\/(.*)/);
+					var f = m && m.length > 1 ? m[1] : e.img;
+					//	If there's a ?, get everthing before it
+					m = f.match(/(.*)\?/);
+					if (m && m.length > 1)
+						f = m[1];
+					//	Is there an extension?
+					m = f.match(/.*(\..*)/);
+					var ext = m && m.length > 1 ? m[1].toLowerCase() : ".jpg";
+					if (ext === ".jpeg")
+						ext = ".jpg";
+					var n = (++i).toString();
+					if (n.length < 2)
+						n = "0" + n;
+					chrome.downloads.download({ url: e.img, filename: "Extractor\\" + d + " #" + n + ext, saveAs: false });
+				}
+			});
 		};
 		$scope.closeClick = function ()
 		{
@@ -24,7 +72,6 @@
 		};
 		$scope.loadImages = function ()
 		{
-			$scope.loading = true;
 			chrome.tabs.query({ active: true, currentWindow: true }, function (tabs)
 			{
 				var tab = tabs[0];
@@ -34,9 +81,9 @@
 					if (chrome.runtime.lastError)
 					{
 						$scope.showError(chrome.runtime.lastError.message);
-						$scope.loading = false;
 						return;
 					}
+					$scope.loading = true;
 					chrome.tabs.executeScript(id, { file: "getImages.js" }, showImages);
 				});
 			});
@@ -65,16 +112,16 @@
 			$scope.imageCount = divs.length;
 
 			$scope.imgs = divs;
-			$scope.$apply();
+			$scope.apply();
 
-			var imgs = $("#images img").get();
+			var imgs = $("img", imageDiv).get();
 			//	Wait for images to load
 			(function wait()
 			{
 				if ($scope.imageCount = imgs.filter(function (e) { return !e.complete; }).length)
 				{
 					//	Show progress and wait for 100 ms
-					$scope.$apply();
+					$scope.apply();
 					setTimeout(wait, 100);
 					return;
 				}
@@ -102,12 +149,12 @@
 				//	Set the flags
 				$scope.loaded = true;
 				$scope.loading = false;
-				$scope.$apply();
+				$scope.apply();
 			})();
 		}
 	}
 
 	var name = "extractor";
-	angular.module(name, []).controller(name, ["$scope", controller]);
+	angular.module(name, []).controller(name, ["$scope", "$filter", controller]);
 
 })();

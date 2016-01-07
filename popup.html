@@ -6,26 +6,37 @@
 	<link href="styles/ng-cloak.css" rel="stylesheet" />
 	<style>
 		.image { cursor: pointer; }
+		.top { margin: 2px 10px 2px 0; float: left; display: inline-block; }
+		.link { color: dodgerblue; cursor: pointer; }
+		.link-disabled { color: gray; cursor: default; }
+		.link:hover { text-decoration: underline; }
+		hr { clear: both; }
 	</style>
 </head>
 <body style="width: 1200px; height: 600px;">
 	<div ng-app="extractor" ng-controller="extractor" ng-cloak>
 		<button ng-hide="loading || loaded" ng-click="loadImages()" class="btn">Load Images</button>
-		<div ng-show="dangerMessage" class="alert alert-danger">{{ dangerMessage }}</div>
+		<div ng-show="dangerMessage" class="alert alert-danger" ng-click="dangerMessage = null">{{ dangerMessage }}</div>
 		<div ng-show="loading">
-			Loading...<span style="margin-left: 5px;">{{ imageCount }}</span>&nbsp;image(s)<br />
+			Loading...<span style="margin-left: 5px;">{{ imageCount }}</span>&nbsp;image<span ng-show="imageCount !== 1" >s</span><br />
 			<img src="spinner.gif" alt="loading" />
 		</div>
 		<div ng-show="loaded">
-			<button class="btn" ng-click="closeClick()">Close Images</button>
-			<span style="margin-left: 5px;">{{ imageCount }}</span><span>&nbsp;image(s)</span>
-			<span style="margin-left: 20px;">Click on an image to remove it</span>
+			<div>
+				<button class="top btn" ng-click="closeClick()">Close Images</button>
+				<div class="top">{{ imageCount }}&nbsp;image<span ng-show="imageCount !== 1">s</span></div>
+				<div class="top">Click on an image to remove it<br />Click the link to open in a new tab.</div>
+				<div class="top">
+					<span ng-class="{ link: imageCount && imageCount <= 10, 'link-disabled': !imageCount || imageCount > 10 }" title="Must be 10 or less images shown." ng-click="openAll()">Open All</span><br />
+					<span class="link" title='Save all images shown to "Downloads\Extractor" folder.' ng-click="saveAll()">Save All</span>
+				</div>
+			</div>
 			<hr />
 			<div id="images">
 				<div ng-repeat="img in imgs" class="image" ng-hide="img.hide">
 					<div>
 						<span ng-click="img.hide = true; hideImage()">{{ img.w }} x {{ img.h }} [{{ img.ord + 1 }}]&nbsp;</span>
-						<a target="_blank" title="Open in new tab" ng-href="{{ img.img }}">{{ img.img }}</a>
+						<a title="Open in new tab" ng-click="openImage(this)">{{ img.img }}</a>
 					</div>
 					<img ng-src="{{ img.img }}" ng-click="img.hide = true; hideImage()" alt="img" data-original="{{ img.original }}" title="remove" />
 				</div>
