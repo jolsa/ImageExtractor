@@ -1,146 +1,113 @@
-$(function ()
+(function ()
 {
-
 	"use strict";
 
-	var main = $("#main");
-	var mainItems = $(".main");
-	var cnt = $(".count");
-	var imgDiv = $("#images");
-	var imgItems = $(".images");
-	var loading = $("#loading");
-	var closeButton = $("#close");
-	var loadButton = $("#load");
-
-	function showImages(response)
+	function controller($scope)
 	{
-
-		var loc = response[0][1];
-		var divs = response[0][0].map(function (e)
+		$scope.showError = function (message)
 		{
-			return e.html;
-		});
-		//	Get distinct list
-		(function ()
-		{
-			var a = [];
-			divs.forEach(function (e)
+			$scope.dangerMessage = message;
+			setTimeout(function ()
 			{
-				var key = e.toLowerCase();
-				if (!a[key])
-					a[key] = e;
-			});
-			divs = [];
-			for (var p in a)
-				divs.push(a[p]);
-		})();
-
-		//	Hide all main elements
-		mainItems.hide();
-		loading.show();
-
-		//	Append all the divs with images to imgDiv
-		imgDiv.find("div").remove();
-
-		divs.forEach(function (e) { $(e).appendTo(imgDiv); });
-
-		var images = $("img", imgDiv);
-		var imgs = images.get();
-		var imageCount = imgs.length;
-		cnt.text(imageCount);
-		(function wait()
+				$scope.dangerMessage = null;
+				$scope.$apply();
+			}, 3000);
+		};
+		$scope.closeClick = function ()
 		{
+			$scope.loading = $scope.loaded = false;
+		};
+		$scope.hideImage = function ()
+		{
+			//	Doing this from ng-Click doesn't seem to work
+			$scope.imageCount--;
+		};
+		$scope.loadImages = function ()
+		{
+			$scope.loading = true;
+			chrome.tabs.query({ active: true, currentWindow: true }, function (tabs)
+			{
+				var tab = tabs[0];
+				var id = tab.id;
+				chrome.tabs.executeScript(id, { file: "scripts/jquery-1.10.2.min.js" }, function ()
+				{
+					if (chrome.runtime.lastError)
+					{
+						$scope.showError(chrome.runtime.lastError.message);
+						$scope.loading = false;
+						return;
+					}
+					chrome.tabs.executeScript(id, { file: "getImages.js" }, showImages);
+				});
+			});
+		};
+		function showImages(response)
+		{
+
+			var info = response[0];
+			var loc = info.location;
+			var divs = info.divs;
+
+			//	Get distinct list
+			(function ()
+			{
+				var a = [];
+				divs.forEach(function (e)
+				{
+					var key = e.img.toLowerCase();
+					if (!a[key])
+						a[key] = e;
+				});
+				divs = [];
+				for (var p in a)
+					divs.push(a[p]);
+			})();
+			$scope.imageCount = divs.length;
+
+			$scope.imgs = divs;
+			$scope.$apply();
+
+			var imgs = $("#images img").get();
 			//	Wait for images to load
-			if (imageCount = imgs.filter(function (e) { return !e.complete; }).length)
+			(function wait()
 			{
-				cnt.text(imageCount);
-				console.log("waiting");
-				setTimeout(wait, 100);
-				return;
-			}
-
-			loading.hide();
-			cnt.text(imageCount = imgs.length);
-
-			//	Show width x height
-			divs = [];
-			images.each(function (ord)
-			{
-				try
+				if ($scope.imageCount = imgs.filter(function (e) { return !e.complete; }).length)
 				{
-					var i = $(this), p = i.parent(), w = i[0].width, h = i[0].height, src = i[0].src;
-					$('<div>' + w + " x " + h + ' [<span/>] <a href="' + src + '">' + src + "</a></div>").prependTo(p);
-					var item = { div: p, size: { w: w, h: h }, ord: ord };
-					divs.push(item);
-				}
-				catch (e)
-				{
-					debugger;
-				}
-			});
-
-			//	Sort by area descending
-			divs.sort(function (a, b)
-			{
-				var area = b.size.w * b.size.h - a.size.w * a.size.h;
-				return area || a.ord - b.ord;
-			}).forEach(function (e, ord)
-			{
-				e.div.find("span").text(ord + 1);
-				e.ord = ord;
-			});
-
-			//	Remove items and re-add
-			$("> div", imgDiv).detach();
-			divs.forEach(function (e) { imgDiv.append(e.div); });
-			imgDiv.show();
-			imgItems.show();
-
-
-			//	Click to remove
-			imgDiv.find("img, > div > div").click(function ()
-			{
-				$(this).parent().remove();
-				cnt.text(--imageCount);
-			});
-
-			closeButton.click(function ()
-			{
-				mainItems.show();
-				imgItems.hide();
-				imgDiv.find("div").remove();
-			});
-
-		})();
-	}
-
-	function showError(message)
-	{
-		var msg = $('<div class="alert alert-danger"/>').text(message).appendTo(main);
-		setTimeout(function () { msg.remove(); }, 5000);
-	}
-
-	loadButton.click(function ()
-	{
-		chrome.tabs.query({ active: true, currentWindow: true }, function (tabs)
-		{
-			var url = tabs[0].url;
-			if (/^chrome/i.test(url))
-			{
-				showError("Cannot load images from chrome:// pages.");
-				return;
-			}
-			var id = tabs[0].id;
-			chrome.tabs.executeScript(id, { file: "scripts/jquery-1.10.2.min.js" }, function ()
-			{
-				if (chrome.runtime.lastError)
-				{
-					showError(chrome.runtime.lastError.message);
+					//	Show progress and wait for 100 ms
+					$scope.$apply();
+					setTimeout(wait, 100);
 					return;
 				}
-				chrome.tabs.executeScript(id, { file: "getImages.js" }, showImages);
-			});
-		});
-	});
 
-});
+				//	Get dimensions
+				divs.forEach(function (e, i)
+				{
+					var img = imgs[i];
+					e.w = img.width;
+					e.h = img.height;
+					e.ord = i;
+				});
+				divs
+					//	Sort by size
+					.sort(function (a, b)
+					{
+						var area = b.w * b.h - a.w * a.h;
+						return area || a.ord - b.ord;
+					})
+					//	Reset Ordinals
+					.forEach(function (e, ord) { e.ord = ord; });
+
+				//	Show total count
+				$scope.imageCount = divs.length;
+				//	Set the flags
+				$scope.loaded = true;
+				$scope.loading = false;
+				$scope.$apply();
+			})();
+		}
+	}
+
+	var name = "extractor";
+	angular.module(name, []).controller(name, ["$scope", controller]);
+
+})();

@@ -3,8 +3,6 @@
 
 # User-specific files
 *.zip
-*.sln
-*.csproj
 *.suo
 *.user
 *.userosscache

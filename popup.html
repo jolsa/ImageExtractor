@@ -3,30 +3,38 @@
 <head>
 	<title>Image Retrieval</title>
 	<link href="styles/bootstrap.min.css" rel="stylesheet" />
+	<link href="styles/ng-cloak.css" rel="stylesheet" />
 	<style>
-		body { font-family: "Segoe UI", "Lucida Grande", Tahoma, sans-serif; font-size: 10pt; }
-		#main { width: 1200px; height: 1200px; }
-		.main { }
-		.images { display: none; }
 		.image { cursor: pointer; }
 	</style>
 </head>
-<body>
-	<div id="main">
-		<button id="load" class="main btn">Load Images</button>
-		<div id="loading" style="display: none;">
-			Loading...<span style="margin-left: 5px;" class="count"></span>&nbsp;image(s)<br />
+<body style="width: 1200px; height: 600px;">
+	<div ng-app="extractor" ng-controller="extractor" ng-cloak>
+		<button ng-hide="loading || loaded" ng-click="loadImages()" class="btn">Load Images</button>
+		<div ng-show="dangerMessage" class="alert alert-danger">{{ dangerMessage }}</div>
+		<div ng-show="loading">
+			Loading...<span style="margin-left: 5px;">{{ imageCount }}</span>&nbsp;image(s)<br />
 			<img src="spinner.gif" alt="loading" />
 		</div>
-		<div class="images" id="images">
-			<button id="close" class="btn">Close Images</button>
-			<span style="margin-left: 5px;" class="count"></span><span>&nbsp;image(s)</span>
+		<div ng-show="loaded">
+			<button class="btn" ng-click="closeClick()">Close Images</button>
+			<span style="margin-left: 5px;">{{ imageCount }}</span><span>&nbsp;image(s)</span>
 			<span style="margin-left: 20px;">Click on an image to remove it</span>
 			<hr />
+			<div id="images">
+				<div ng-repeat="img in imgs" class="image" ng-hide="img.hide">
+					<div>
+						<span ng-click="img.hide = true; hideImage()">{{ img.w }} x {{ img.h }} [{{ img.ord + 1 }}]&nbsp;</span>
+						<a target="_blank" title="Open in new tab" ng-href="{{ img.img }}">{{ img.img }}</a>
+					</div>
+					<img ng-src="{{ img.img }}" ng-click="img.hide = true; hideImage()" alt="img" data-original="{{ img.original }}" title="remove" />
+				</div>
+			</div>
 		</div>
 	</div>
 	<!-- JavaScript and HTML must be in separate files -->
 	<script src="scripts/jquery-1.10.2.min.js"></script>
+	<script src="scripts/angular.min.js"></script>
 	<script src="popup.js"></script>
 </body>
 </html>
