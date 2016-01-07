@@ -3,9 +3,27 @@
 	"use strict";
 
 	var imageDiv = $("#images");
+	var naming = { folder: "Extractor\\", ord: 0, date: null, ordLength: 3 };
 
 	function controller($scope, $filter)
 	{
+		chrome.downloads.onDeterminingFilename.addListener(function (item, suggest)
+		{
+			var num = (++naming.ord).toString();
+			if (num.length < naming.ordLength)
+				num = Array(naming.ordLength + 1 - num.length).join("0") + num;
+			var f = item.filename;
+			//	Is there an extension?
+			var m = f.match(/.*(\..*)/);
+			//	If not, get the mime name
+			var ext = (m && m.length > 1 ? m[1] : "." + item.mime.match(/.*\/(.*)/)[1]).toLowerCase();
+			if (ext === ".jpeg")
+				ext = ".jpg";
+
+			var filename = naming.folder + naming.date + " #" + num + ext;
+			suggest({ filename: filename });
+
+		});
 		$scope.apply = function ()
 		{
 			if ($scope.$root.$$phase !== "$apply" && $scope.$root.$$phase !== "$digest")
@@ -36,28 +54,13 @@
 		};
 		$scope.saveAll = function ()
 		{
-			var i = 0;
-			var d = $filter("date")(new Date(), "yyyy-MM-dd HH.mm.ss");
+			naming.ord = 0;
+			naming.date = $filter("date")(new Date(), "yyyy-MM-dd HH.mm.ss");
 			$scope.imgs.forEach(function (e)
 			{
 				if (!e.hide)
 				{
-					//	Get everything after the last /
-					var m = e.img.match(/.*\/(.*)/);
-					var f = m && m.length > 1 ? m[1] : e.img;
-					//	If there's a ?, get everthing before it
-					m = f.match(/(.*)\?/);
-					if (m && m.length > 1)
-						f = m[1];
-					//	Is there an extension?
-					m = f.match(/.*(\..*)/);
-					var ext = m && m.length > 1 ? m[1].toLowerCase() : ".jpg";
-					if (ext === ".jpeg")
-						ext = ".jpg";
-					var n = (++i).toString();
-					if (n.length < 2)
-						n = "0" + n;
-					chrome.downloads.download({ url: e.img, filename: "Extractor\\" + d + " #" + n + ext, saveAs: false });
+					chrome.downloads.download({ url: e.img, saveAs: false });
 				}
 			});
 		};
