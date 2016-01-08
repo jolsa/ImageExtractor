@@ -3,15 +3,40 @@
 	"use strict";
 
 	var imageDiv = $("#images");
-	var settings = { errMsgTimeout: 3000, downloadFolder: "Extractor\\" };
-	var naming = { ord: 0, date: null, ordLength: 3 };
+	var settings = { errMsgTimeout: 3000, downloadFolder: "Extractor\\", maxOpen: 10, nameOrdLength: 3 };
 
 	function controller($scope, $filter)
 	{
-		var data = { buttonText: "Load Images", dangerMessage: null, imageCount: null, imgs: null, loaded: false, loading: false };
+
+		var naming =
+		{
+			ord: 0, dateStamp: null, date: null, ordLength: settings.nameOrdLength,
+			clear: function()
+			{
+				var t = this;
+				t.ord = 0;
+				t.date = null;
+				t.dateStamp = null;
+			},
+			reset: function ()
+			{
+				var t = this;
+				t.date = new Date();
+				t.ord = 0;
+				t.dateStamp = $filter("date")(t.date, "yyyy-MM-dd HH.mm.ss");
+			}
+		};
+
+		var data = { buttonText: "Load Images", dangerMessage: null, imageCount: null, imgs: null, loaded: false, loading: false, maxOpen: settings.maxOpen, nameSet: false };
 		$scope.data = data;
 		chrome.downloads.onDeterminingFilename.addListener(function (item, suggest)
 		{
+			if (!naming.dateStamp)
+			{
+				naming.reset();
+				data.nameSet = true;
+				$scope.apply();
+			}
 			//	Left-Pad number with 0
 			var num = (++naming.ord).toString();
 			if (num.length < naming.ordLength)
@@ -24,7 +49,7 @@
 			if (ext === ".jpeg")
 				ext = ".jpg";
 
-			suggest({ filename: settings.downloadFolder + naming.date + " #" + num + ext });
+			suggest({ filename: settings.downloadFolder + naming.dateStamp + " #" + num + ext });
 
 		});
 		//	Using this prevents $apply from throwing an error
@@ -32,6 +57,14 @@
 		{
 			if ($scope.$root.$$phase !== "$apply" && $scope.$root.$$phase !== "$digest")
 				$scope.$apply();
+		};
+		$scope.getOpenAllTitle = function ()
+		{
+			return $scope.canOpenAll() ? "Open each image in a new tab" : "Must be " + data.maxOpen + " or less images shown to Open All.";
+		};
+		$scope.canOpenAll = function ()
+		{
+			return data.imageCount && data.imageCount <= data.maxOpen;
 		};
 		$scope.showError = function (message)
 		{
@@ -50,8 +83,8 @@
 		};
 		$scope.openAll = function ()
 		{
-			//	Don't "open all" if there are more than 10
-			if (!data.imageCount || data.imageCount > 10) return;
+			//	Don't "open all" if there are more than maxOpen
+			if (!data.imageCount || data.imageCount > data.maxOpen) return;
 			data.imgs.forEach(function (e)
 			{
 				if (!e.hide)
@@ -61,14 +94,19 @@
 		$scope.saveAll = function ()
 		{
 			//	Reset the ordinal and timestamp
-			naming.ord = 0;
-			naming.date = $filter("date")(new Date(), "yyyy-MM-dd HH.mm.ss");
+			naming.reset();
+			data.nameSet = true;
 			data.imgs.forEach(function (e)
 			{
 				if (!e.hide)
 					chrome.downloads.download({ url: e.img, saveAs: false });
 			});
 		};
+		$scope.resetNames = function ()
+		{
+			naming.clear();
+			data.nameSet = false;
+		},
 		$scope.hideImage = function ()
 		{
 			//	Doing this from ng-Click doesn't seem to work
@@ -76,6 +114,8 @@
 		};
 		$scope.loadImages = function ()
 		{
+			naming.clear();
+			data.nameSet = false;
 			chrome.tabs.query({ active: true, currentWindow: true }, function (tabs)
 			{
 				var id = tabs[0].id;

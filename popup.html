@@ -26,9 +26,14 @@
 				<div class="top">{{ data.imageCount }}&nbsp;image<span ng-show="data.imageCount !== 1">s</span></div>
 				<div class="top">Click on an image to remove it<br />Click the link to open in a new tab.</div>
 				<div class="top">
-					<span ng-class="{ link: data.imageCount && data.imageCount <= 10, 'link-disabled': !data.imageCount || data.imageCount > 10 }"
-						  title="Must be 10 or less images shown." ng-click="openAll()">Open All</span><br />
+					<span ng-class="{ link: canOpenAll(), 'link-disabled': !canOpenAll() }"
+						  ng-attr-title="{{ getOpenAllTitle() }}" ng-click="openAll()">Open All</span>
+					<br />
 					<span class="link" title='Save all images shown to "Downloads\Extractor" folder.' ng-click="saveAll()">Save All</span>
+					<span ng-show="data.nameSet">
+						<br />
+						<span class="link" title="Reset download name sequencing for individual 'Save Image As' downloads" ng-click="resetNames()">Reset Download Sequencing</span>
+					</span>
 				</div>
 			</div>
 			<hr />
