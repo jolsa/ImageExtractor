@@ -15,25 +15,25 @@
 </head>
 <body style="width: 1200px; height: 600px;">
 	<div ng-app="extractor" ng-controller="extractor" ng-cloak>
-		<button ng-hide="loading || loaded" ng-click="loadImages()" class="btn">Load Images</button>
-		<div ng-show="dangerMessage" class="alert alert-danger" ng-click="dangerMessage = null">{{ dangerMessage }}</div>
-		<div ng-show="loading">
-			Loading...<span style="margin-left: 5px;">{{ imageCount }}</span>&nbsp;image<span ng-show="imageCount !== 1" >s</span><br />
+		<button ng-hide="data.loading || data.dangerMessage" ng-click="loadImages()" class="btn top">{{ data.buttonText }}</button>
+		<div ng-show="data.dangerMessage" class="alert alert-danger" ng-click="data.dangerMessage = null">{{ data.dangerMessage }}</div>
+		<div ng-show="data.loading">
+			Loading...<span style="margin-left: 5px;">{{ data.imageCount }}</span>&nbsp;image<span ng-show="data.imageCount !== 1" >s</span><br />
 			<img src="spinner.gif" alt="loading" />
 		</div>
-		<div ng-show="loaded">
+		<div ng-show="data.loaded">
 			<div>
-				<button class="top btn" ng-click="closeClick()">Close Images</button>
-				<div class="top">{{ imageCount }}&nbsp;image<span ng-show="imageCount !== 1">s</span></div>
+				<div class="top">{{ data.imageCount }}&nbsp;image<span ng-show="data.imageCount !== 1">s</span></div>
 				<div class="top">Click on an image to remove it<br />Click the link to open in a new tab.</div>
 				<div class="top">
-					<span ng-class="{ link: imageCount && imageCount <= 10, 'link-disabled': !imageCount || imageCount > 10 }" title="Must be 10 or less images shown." ng-click="openAll()">Open All</span><br />
+					<span ng-class="{ link: data.imageCount && data.imageCount <= 10, 'link-disabled': !data.imageCount || data.imageCount > 10 }"
+						  title="Must be 10 or less images shown." ng-click="openAll()">Open All</span><br />
 					<span class="link" title='Save all images shown to "Downloads\Extractor" folder.' ng-click="saveAll()">Save All</span>
 				</div>
 			</div>
 			<hr />
 			<div id="images">
-				<div ng-repeat="img in imgs" class="image" ng-hide="img.hide">
+				<div ng-repeat="img in data.imgs" class="image" ng-hide="img.hide">
 					<div>
 						<span ng-click="img.hide = true; hideImage()">{{ img.w }} x {{ img.h }} [{{ img.ord + 1 }}]&nbsp;</span>
 						<a title="Open in new tab" ng-click="openImage(this)">{{ img.img }}</a>

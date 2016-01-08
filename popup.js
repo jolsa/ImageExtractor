@@ -3,12 +3,16 @@
 	"use strict";
 
 	var imageDiv = $("#images");
-	var naming = { folder: "Extractor\\", ord: 0, date: null, ordLength: 3 };
+	var settings = { errMsgTimeout: 3000, downloadFolder: "Extractor\\" };
+	var naming = { ord: 0, date: null, ordLength: 3 };
 
 	function controller($scope, $filter)
 	{
+		var data = { buttonText: "Load Images", dangerMessage: null, imageCount: null, imgs: null, loaded: false, loading: false };
+		$scope.data = data;
 		chrome.downloads.onDeterminingFilename.addListener(function (item, suggest)
 		{
+			//	Left-Pad number with 0
 			var num = (++naming.ord).toString();
 			if (num.length < naming.ordLength)
 				num = Array(naming.ordLength + 1 - num.length).join("0") + num;
@@ -20,10 +24,10 @@
 			if (ext === ".jpeg")
 				ext = ".jpg";
 
-			var filename = naming.folder + naming.date + " #" + num + ext;
-			suggest({ filename: filename });
+			suggest({ filename: settings.downloadFolder + naming.date + " #" + num + ext });
 
 		});
+		//	Using this prevents $apply from throwing an error
 		$scope.apply = function ()
 		{
 			if ($scope.$root.$$phase !== "$apply" && $scope.$root.$$phase !== "$digest")
@@ -31,13 +35,14 @@
 		};
 		$scope.showError = function (message)
 		{
-			$scope.dangerMessage = message;
+			data.dangerMessage = message;
 			$scope.apply();
+			//	Clear message after timeout
 			setTimeout(function ()
 			{
-				$scope.dangerMessage = null;
+				data.dangerMessage = null;
 				$scope.apply();
-			}, 3000);
+			}, settings.errMsgTimeout);
 		};
 		$scope.openImage = function (item)
 		{
@@ -45,8 +50,9 @@
 		};
 		$scope.openAll = function ()
 		{
-			if ($scope.imageCount === 0 || $scope.imageCount > 10) return;
-			$scope.imgs.forEach(function (e)
+			//	Don't "open all" if there are more than 10
+			if (!data.imageCount || data.imageCount > 10) return;
+			data.imgs.forEach(function (e)
 			{
 				if (!e.hide)
 					chrome.tabs.create({ url: e.img, active: false });
@@ -54,39 +60,35 @@
 		};
 		$scope.saveAll = function ()
 		{
+			//	Reset the ordinal and timestamp
 			naming.ord = 0;
 			naming.date = $filter("date")(new Date(), "yyyy-MM-dd HH.mm.ss");
-			$scope.imgs.forEach(function (e)
+			data.imgs.forEach(function (e)
 			{
 				if (!e.hide)
-				{
 					chrome.downloads.download({ url: e.img, saveAs: false });
-				}
 			});
-		};
-		$scope.closeClick = function ()
-		{
-			$scope.loading = $scope.loaded = false;
 		};
 		$scope.hideImage = function ()
 		{
 			//	Doing this from ng-Click doesn't seem to work
-			$scope.imageCount--;
+			data.imageCount--;
 		};
 		$scope.loadImages = function ()
 		{
 			chrome.tabs.query({ active: true, currentWindow: true }, function (tabs)
 			{
-				var tab = tabs[0];
-				var id = tab.id;
+				var id = tabs[0].id;
+				//	Inject jQuery first
 				chrome.tabs.executeScript(id, { file: "scripts/jquery-1.10.2.min.js" }, function ()
 				{
+					//	If we can't inject a script, show the message
 					if (chrome.runtime.lastError)
 					{
 						$scope.showError(chrome.runtime.lastError.message);
 						return;
 					}
-					$scope.loading = true;
+					data.loading = true;
 					chrome.tabs.executeScript(id, { file: "getImages.js" }, showImages);
 				});
 			});
@@ -112,16 +114,16 @@
 				for (var p in a)
 					divs.push(a[p]);
 			})();
-			$scope.imageCount = divs.length;
+			data.imageCount = divs.length;
 
-			$scope.imgs = divs;
+			data.imgs = divs;
 			$scope.apply();
 
 			var imgs = $("img", imageDiv).get();
 			//	Wait for images to load
 			(function wait()
 			{
-				if ($scope.imageCount = imgs.filter(function (e) { return !e.complete; }).length)
+				if (data.imageCount = imgs.filter(function (e) { return !e.complete; }).length)
 				{
 					//	Show progress and wait for 100 ms
 					$scope.apply();
@@ -148,10 +150,11 @@
 					.forEach(function (e, ord) { e.ord = ord; });
 
 				//	Show total count
-				$scope.imageCount = divs.length;
+				data.imageCount = divs.length;
 				//	Set the flags
-				$scope.loaded = true;
-				$scope.loading = false;
+				data.loaded = true;
+				data.loading = false;
+				data.buttonText = "Reload Images";
 				$scope.apply();
 			})();
 		}
