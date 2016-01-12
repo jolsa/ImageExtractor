@@ -1,0 +1,31 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+	<title>Dynamic Content</title>
+	<meta charset="utf-8" />
+	<link href="/styles/bootstrap.min.css" rel="stylesheet" />
+	<link href="/styles/ng-cloak.css" rel="stylesheet" />
+	<style type="text/css">
+		body { margin: 2px; }
+		.stacked { display: block; }
+	</style>
+</head>
+<body>
+	<div ng-app="images" ng-controller="images">
+		<div class="btn-group" data-toggle="buttons">
+			<label class="btn btn-primary" ng-class="imgClass ? '': 'active'">
+				<input type="radio" name="options" ng-click="imgClass=null">Side-by-Side
+			</label>
+			<label class="btn btn-primary" ng-class="imgClass ? 'active': ''">
+				<input type="radio" name="options" ng-click="imgClass='stacked'">Stacked
+			</label>
+		</div>
+		<div style="margin-top: 5px;">
+			<img ng-class="imgClass" ng-repeat="img in data" ng-src="{{ img.img }}" alt="img" data-original="{{ img.original }}" />
+		</div>
+	</div>
+	<script src="/scripts/jquery-1.10.2.min.js"></script>
+	<script src="/scripts/angular.min.js"></script>
+	<script src="Images.js"></script>
+</body>
+</html>

@@ -44,6 +44,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Include="440x280.png" />
+    <Content Include="content\Images.html" />
+    <Content Include="content\Images.js" />
     <Content Include="icon128.png" />
     <Content Include="icon16.png" />
     <Content Include="icon48.png" />

@@ -102,6 +102,22 @@
 					chrome.downloads.download({ url: e.img, saveAs: false });
 			});
 		};
+		$scope.toNewPage = function()
+		{
+			chrome.tabs.create({ url: chrome.extension.getURL("content/Images.html"), active: false }, function (tab)
+			{
+				var selfTabId = tab.id;
+				chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab)
+				{
+					if (changeInfo.status === "complete" && tabId === selfTabId)
+					{
+						var tabs = chrome.extension.getViews({ type: "tab" });
+						tabs[0].renderItems(data.imgs);
+						chrome.tabs.update(tabId, { active: true });
+					}
+				});
+			});
+		},
 		$scope.resetNames = function ()
 		{
 			naming.clear();
