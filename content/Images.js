@@ -21,6 +21,13 @@ function renderItems(passedItems)
 			$scope.imgClass = "stacked";
 			$scope.sortBy = "area";
 			$scope.data = [];
+
+			$scope.apply = function ()
+			{
+				if ($scope.$root.$$phase !== "$apply" && $scope.$root.$$phase !== "$digest")
+					$scope.$apply();
+			};
+
 			//	Wait until "rendered" is set, then set data to items
 			(function wait()
 			{
@@ -33,6 +40,7 @@ function renderItems(passedItems)
 				$scope.imageCount = items.length;
 				$scope.$apply();
 				chrome.downloads.onDeterminingFilename.addListener(naming.renamer);
+				chrome.downloads.onCreated.addListener(function () { setTimeout($scope.apply, 10); });
 			})();
 			$scope.sort = function (sortBy)
 			{

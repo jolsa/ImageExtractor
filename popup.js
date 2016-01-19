@@ -12,13 +12,14 @@
 		var data = { dangerMessage: null, imageCount: null, imgs: null, loaded: false, loading: false, maxOpen: settings.maxOpen };
 		$scope.data = data;
 
-		chrome.downloads.onDeterminingFilename.addListener(naming.renamer);
 		//	Using this prevents $apply from throwing an error
 		$scope.apply = function ()
 		{
 			if ($scope.$root.$$phase !== "$apply" && $scope.$root.$$phase !== "$digest")
 				$scope.$apply();
-		};
+			};
+		chrome.downloads.onDeterminingFilename.addListener(naming.renamer);
+		chrome.downloads.onCreated.addListener(function () { setTimeout($scope.apply, 10); });
 		$scope.getOpenAllTitle = function ()
 		{
 			return $scope.canOpenAll() ? "Open each image in a new tab" : "Must be " + data.maxOpen + " or less images shown to Open All.";
