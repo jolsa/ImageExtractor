@@ -3,7 +3,7 @@
 
 	"name": "Image Retrieval",
 	"description": "Get Images from the current page",
-	"version": "1.0.2.1",
+	"version": "1.0.2.2",
 	"background": {
 		"scripts": [ "popup.js" ]
 	},
