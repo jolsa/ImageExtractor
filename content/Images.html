@@ -51,7 +51,7 @@
 		<div style="margin-top: 5px;">
 			<img class="img" ng-class="imgClass" ng-repeat="img in data"
 				 ng-hide="img.hide"
-				 ng-src="{{ img.img }}" ng-attr-title="{{ img.w }} x {{ img.h }}, area = {{ img.w * img.h | number }}; [{{ img.ord + 1 }}] {{ img.img }}"
+				 ng-src="{{ img.img }}" ng-attr-title="{{ img.w }} x {{ img.h }}, area = {{ img.w * img.h | number }}; [{{ img.ord + 1 }}] (Click to hide) {{ img.img }}"
 				 alt="img" data-original="{{ img.original }}"
 				 ng-click="img.hide = true; hideImage();"
 				 />
