@@ -37,8 +37,9 @@ function renderItems(passedItems)
 					return;
 				}
 				$scope.data = items;
-				$scope.imageCount = items.length;
-				$scope.$apply();
+				$scope.imageCount = items.filter(function (e) { return !e.hide; }).length;
+				$scope.canShow = !!(items.length - $scope.imageCount);
+				$scope.apply();
 				chrome.downloads.onDeterminingFilename.addListener(naming.renamer);
 				chrome.downloads.onCreated.addListener(function () { setTimeout($scope.apply, 10); });
 			})();
