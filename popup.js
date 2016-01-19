@@ -3,55 +3,16 @@
 	"use strict";
 
 	var imageDiv = $("#images");
-	var settings = { errMsgTimeout: 3000, downloadFolder: "Extractor\\", maxOpen: 10, nameOrdLength: 3 };
 
-	function controller($scope, $filter)
+	function controller($scope, $filter, settingsFactory)
 	{
+		var settings = settingsFactory.settings;
+		var naming = $scope.naming = settingsFactory.naming;
 
-		var naming =
-		{
-			ord: 0, dateStamp: null, date: null, ordLength: settings.nameOrdLength,
-			clear: function()
-			{
-				var t = this;
-				t.ord = 0;
-				t.date = null;
-				t.dateStamp = null;
-			},
-			reset: function ()
-			{
-				var t = this;
-				t.date = new Date();
-				t.ord = 0;
-				t.dateStamp = $filter("date")(t.date, "yyyy-MM-dd HH.mm.ss");
-			}
-		};
-
-		var data = { buttonText: "Load Images", dangerMessage: null, imageCount: null, imgs: null, loaded: false, loading: false, maxOpen: settings.maxOpen, nameSet: false };
+		var data = { dangerMessage: null, imageCount: null, imgs: null, loaded: false, loading: false, maxOpen: settings.maxOpen };
 		$scope.data = data;
-		chrome.downloads.onDeterminingFilename.addListener(function (item, suggest)
-		{
-			if (!naming.dateStamp)
-			{
-				naming.reset();
-				data.nameSet = true;
-				$scope.apply();
-			}
-			//	Left-Pad number with 0
-			var num = (++naming.ord).toString();
-			if (num.length < naming.ordLength)
-				num = Array(naming.ordLength + 1 - num.length).join("0") + num;
-			var f = item.filename;
-			//	Is there an extension?
-			var m = f.match(/.*(\..*)/);
-			//	If not, get the mime name
-			var ext = (m && m.length > 1 ? m[1] : "." + item.mime.match(/.*\/(.*)/)[1]).toLowerCase();
-			if (ext === ".jpeg")
-				ext = ".jpg";
 
-			suggest({ filename: settings.downloadFolder + naming.dateStamp + " #" + num + ext });
-
-		});
+		chrome.downloads.onDeterminingFilename.addListener(naming.renamer);
 		//	Using this prevents $apply from throwing an error
 		$scope.apply = function ()
 		{
@@ -95,7 +56,6 @@
 		{
 			//	Reset the ordinal and timestamp
 			naming.reset();
-			data.nameSet = true;
 			data.imgs.forEach(function (e)
 			{
 				if (!e.hide)
@@ -118,11 +78,6 @@
 				});
 			});
 		},
-		$scope.resetNames = function ()
-		{
-			naming.clear();
-			data.nameSet = false;
-		},
 		$scope.hideImage = function ()
 		{
 			//	Doing this from ng-Click doesn't seem to work
@@ -131,7 +86,6 @@
 		$scope.loadImages = function ()
 		{
 			naming.clear();
-			data.nameSet = false;
 			chrome.tabs.query({ active: true, currentWindow: true }, function (tabs)
 			{
 				var id = tabs[0].id;
@@ -149,6 +103,10 @@
 				});
 			});
 		};
+		$scope.resetNames = function ()
+		{
+			naming.clear();
+		}
 		function showImages(response)
 		{
 
@@ -210,13 +168,14 @@
 				//	Set the flags
 				data.loaded = true;
 				data.loading = false;
-				data.buttonText = "Reload Images";
 				$scope.apply();
 			})();
 		}
+
+		$scope.loadImages();
 	}
 
 	var name = "extractor";
-	angular.module(name, []).controller(name, ["$scope", "$filter", controller]);
+	angular.module(name, ["settings"]).controller(name, ["$scope", "$filter", "settings", controller]);
 
 })();

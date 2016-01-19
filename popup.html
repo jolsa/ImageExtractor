@@ -15,7 +15,7 @@
 </head>
 <body style="width: 1200px; height: 600px;">
 	<div ng-app="extractor" ng-controller="extractor" ng-cloak>
-		<button ng-hide="data.loading || data.dangerMessage" ng-click="loadImages()" class="btn top">{{ data.buttonText }}</button>
+		<button ng-hide="data.loading || data.dangerMessage" ng-click="loadImages()" class="btn top">Reload Images</button>
 		<div ng-show="data.dangerMessage" class="alert alert-danger" ng-click="data.dangerMessage = null">{{ data.dangerMessage }}</div>
 		<div ng-show="data.loading">
 			Loading...<span style="margin-left: 5px;">{{ data.imageCount }}</span>&nbsp;image<span ng-show="data.imageCount !== 1" >s</span><br />
@@ -32,9 +32,9 @@
 					<span class="link" title='Save all images shown to "Downloads\Extractor" folder.' ng-click="saveAll()">Save All</span>
 					<br />
 					<span class="link" title='Place all images in a new page.' ng-click="toNewPage()">To New Page</span>
-					<span ng-show="data.nameSet">
+					<span ng-hide="naming.cleared">
 						<br />
-						<span class="link" title="Reset download name sequencing for individual 'Save Image As' downloads" ng-click="resetNames()">Reset Download Sequencing</span>
+						<span class="link" title="Reset download name sequencing for individual 'Save Image As' downloads" ng-click="resetNames()">Reset Download Sequence</span>
 					</span>
 				</div>
 			</div>
@@ -53,6 +53,7 @@
 	<!-- JavaScript and HTML must be in separate files -->
 	<script src="scripts/jquery-1.10.2.min.js"></script>
 	<script src="scripts/angular.min.js"></script>
+	<script src="scripts/settings.js"></script>
 	<script src="popup.js"></script>
 </body>
 </html>

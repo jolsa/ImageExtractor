@@ -8,24 +8,58 @@
 	<style type="text/css">
 		body { margin: 2px; }
 		.stacked { display: block; }
+		.img { cursor: pointer; }
+		.imgBorder,img:hover { border: 1px solid black; }
 	</style>
 </head>
 <body>
 	<div ng-app="images" ng-controller="images">
 		<div class="btn-group" data-toggle="buttons">
-			<label class="btn btn-primary" ng-class="imgClass ? '': 'active'">
-				<input type="radio" name="options" ng-click="imgClass=null">Side-by-Side
-			</label>
 			<label class="btn btn-primary" ng-class="imgClass ? 'active': ''">
-				<input type="radio" name="options" ng-click="imgClass='stacked'">Stacked
+				<input type="radio" name="viewOptions" ng-click="imgClass='stacked'">Stacked
+			</label>
+			<label class="btn btn-primary" ng-class="imgClass ? '': 'active'">
+				<input type="radio" name="viewOptions" ng-click="imgClass=null">Side-by-Side
 			</label>
 		</div>
+
+		<div class="btn-group" style="margin-left: 10px;" data-toggle="buttons">
+			<label class="btn btn-primary" ng-class="sortBy === 'area' ? 'active': ''">
+				<input type="radio" name="sortOptions" ng-click="sort('area')">By area
+			</label>
+			<label class="btn btn-primary" ng-class="sortBy === 'width' ? 'active': ''">
+				<input type="radio" name="sortOptions" ng-click="sort('width')">By width
+			</label>
+			<label class="btn btn-primary" ng-class="sortBy === 'height' ? 'active': ''">
+				<input type="radio" name="sortOptions" ng-click="sort('height')">By height
+			</label>
+		</div>
+
+		<button style="margin-left: 10px;" ng-disabled="!canShow" ng-click="showAll()" class="btn btn-primary">Show All Images</button>
+		<span style="margin-left: 10px;">{{ imageCount }}&nbsp;image<span ng-show="imageCount !== 1">s</span></span>
+
+		<button style="margin-left: 10px;" type="button" class="btn" ng-class="showBorders ? 'btn-primary' : ''" data-toggle="button" ng-click="toggleBorders()" >
+			<span ng-show="showBorders">No&nbsp;</span>Borders
+		</button>
+		<button type="button" class="btn btn-primary" ng-click="saveAll()">
+			Save All
+		</button>
+		<button type="button" class="btn btn-primary" title="Reset download name sequencing for individual 'Save Image As' downloads" ng-hide="naming.cleared" ng-click="resetNames()">
+			Reset Name Sequence
+		</button>
+
 		<div style="margin-top: 5px;">
-			<img ng-class="imgClass" ng-repeat="img in data" ng-src="{{ img.img }}" alt="img" data-original="{{ img.original }}" />
+			<img class="img" ng-class="imgClass" ng-repeat="img in data"
+				 ng-hide="img.hide"
+				 ng-src="{{ img.img }}" ng-attr-title="{{ img.w }} x {{ img.h }}, area = {{ img.w * img.h | number }}; [{{ img.ord + 1 }}] {{ img.img }}"
+				 alt="img" data-original="{{ img.original }}"
+				 ng-click="img.hide = true; hideImage();"
+				 />
 		</div>
 	</div>
 	<script src="/scripts/jquery-1.10.2.min.js"></script>
 	<script src="/scripts/angular.min.js"></script>
+	<script src="/scripts/settings.js"></script>
 	<script src="Images.js"></script>
 </body>
 </html>

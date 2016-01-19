@@ -50,6 +50,7 @@
     <Content Include="icon16.png" />
     <Content Include="icon48.png" />
     <Content Include="scripts\angular.min.js" />
+    <Content Include="scripts\settings.js" />
     <Content Include="styles\bootstrap.min.css" />
     <Content Include="styles\ng-cloak.css" />
     <Content Include="ZipExclude.txt" />
