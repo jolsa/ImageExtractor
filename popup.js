@@ -113,25 +113,25 @@
 
 			var info = response[0];
 			var loc = info.location;
-			var divs = info.divs;
+			var images = info.imgs;
 
 			//	Get distinct list
 			(function ()
 			{
 				var a = [];
-				divs.forEach(function (e)
+				images.forEach(function (e)
 				{
 					var key = e.img.toLowerCase();
 					if (!a[key])
 						a[key] = e;
 				});
-				divs = [];
+				images = [];
 				for (var p in a)
-					divs.push(a[p]);
+					images.push(a[p]);
 			})();
-			data.imageCount = divs.length;
+			data.imageCount = images.length;
 
-			data.imgs = divs;
+			data.imgs = images;
 			$scope.apply();
 
 			var imgs = $("img", imageDiv).get();
@@ -147,25 +147,25 @@
 				}
 
 				//	Get dimensions
-				divs.forEach(function (e, i)
+				images.forEach(function (e, i)
 				{
 					var img = imgs[i];
 					e.w = img.width;
 					e.h = img.height;
 					e.ord = i;
 				});
-				divs
+				images
 					//	Sort by size
 					.sort(function (a, b)
 					{
 						var area = b.w * b.h - a.w * a.h;
-						return area || a.ord - b.ord;
+						return area || a.index - b.index;
 					})
 					//	Reset Ordinals
 					.forEach(function (e, ord) { e.ord = ord; });
 
 				//	Show total count
-				data.imageCount = divs.length;
+				data.imageCount = images.length;
 				//	Set the flags
 				data.loaded = true;
 				data.loading = false;

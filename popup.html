@@ -45,7 +45,7 @@
 						<span ng-click="img.hide = true; hideImage()">{{ img.w }} x {{ img.h }} [{{ img.ord + 1 }}]&nbsp;</span>
 						<a title="Open in new tab" ng-click="openImage(this)">{{ img.img }}</a>
 					</div>
-					<img ng-src="{{ img.img }}" ng-click="img.hide = true; hideImage()" alt="img" data-original="{{ img.original }}" title="remove" />
+					<img ng-src="{{ img.img }}" ng-click="img.hide = true; hideImage()" alt="img" data-original="{{ img.original }}" data-type="{{ img.type }}" title="remove" />
 				</div>
 			</div>
 		</div>

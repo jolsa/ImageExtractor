@@ -34,6 +34,9 @@
 			<label class="btn btn-primary" ng-class="sortBy === 'height' ? 'active': ''">
 				<input type="radio" name="sortOptions" ng-click="sort('height')">By height
 			</label>
+			<label class="btn btn-primary" ng-class="sortBy === 'index' ? 'active': ''">
+				<input type="radio" name="sortOptions" ng-click="sort('index')">By index
+			</label>
 		</div>
 
 		<button style="margin-left: 10px;" ng-disabled="!canShow" ng-click="showAll()" class="btn btn-primary">Show All Images</button>

@@ -56,7 +56,9 @@ function renderItems(passedItems)
 							r = b.w - a.w;
 						else if (sortBy === "height")
 							r = b.h - a.h;
-						return r || a.ord - b.ord;
+						else if (sortBy === "index")
+							r = 0;
+						return r || a.index - b.index;
 					})
 					//	Reset Ordinals
 					.forEach(function (e, ord) { e.ord = ord; });

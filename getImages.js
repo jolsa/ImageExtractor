@@ -4,41 +4,54 @@ var info = { location: null, divs: null };
 {
 	"use strict";
 
-	function toDiv(img)
+	//	Cache regex for reuse
+	var rxQuotes = /["']/g;
+	var rxHttp = /^http/i;
+	var rxData = /^data:/i;
+	var rxDblSlash = /^\/\//;
+	var rxHttpFile = /^(http|file)/i;
+	var rxSlash = /.*\//;
+
+	function toImage(imgData)
 	{
+		var img = $.trim(imgData.text);
 		var original = img;
 		//	Remove quotes (if any)
-		img = img.replace(/"/g, "");
+		img = img.replace(rxQuotes, "");
 		//	If it doesn't start with http(s) or "data:"
-		if (!(/^http/i.test(img)) && !(/^data:/i.test(img)))
+		if (!(rxHttp.test(img)) && !(rxData.test(img)))
 		{
 			//	Does it start with // ?
-			if (/^\/\//.test(img))
+			if (rxDblSlash.test(img))
 			{
 				var p = location.protocol;
 				//	If protocol is not file or http(s), set it to http (and hope for the best)
-				img = (/^(http|file)/i.test(p) ? p : "http:") + img;
+				img = (rxHttpFile.test(p) ? p : "http:") + img;
 			}
 			//	Does it start with a / ?
 			else if (/^\//.test(img))
 				img = location.origin + img;
 			else
 				//	Otherwise, append to current url
-				img = location.href.match(/.*\//)[0] + img;
+				img = location.href.match(rxSlash)[0] + img;
 		}
-		return { img: img, original: original };
+		return { img: img, original: original, index: imgData.index, type: imgData.type };
 	}
 
+	var all = $("*");
 	var loc = $.extend({}, location);
 	info.location = loc;
 
+	var rxHasUrl = /url/i;
+	var rxParseUrl = /(.*?url\s*\()(.*?)\).*/i;
+
 	//	Find all background images and merge with <img>
-	var divs = $("*[style]").map(function () { return $(this).css("background-image"); }).get()
-			.filter(function (e) { return /url/i.test(e); })
-			.map(function (e) { return toDiv(/(.*?url\s*\()(.*?)\).*/i.exec(e)[2]); })
-		.concat($("img").map(function () { return $(this).attr("src"); }).get()
-			.map(function (e) { return toDiv(e); }));
-	info.divs = divs.filter(function (e) { return e.original; });
+	var imgs = $("*[style]").map(function () { var t = $(this); return { text: t.css("background-image"), index: all.index(t) }; }).get()
+			.filter(function (e) { return rxHasUrl.test(e.text); })
+			.map(function (e) { return toImage({ text: rxParseUrl.exec(e.text)[2], index: e.index, type: "url" }); })
+		.concat($("img").map(function () { var t = $(this); return { text: t.attr("src"), index: all.index(t), type: "img" }; }).get()
+			.map(function (e) { return toImage(e); }));
+	info.imgs = imgs.filter(function (e) { return e.original; });
 
 })();
 
