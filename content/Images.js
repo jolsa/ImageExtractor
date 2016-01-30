@@ -10,11 +10,15 @@ function renderItems(passedItems)
 
 (function ()
 {
+
 	var name = "images";
 	angular.module(name, ["settings"])
 		.controller(name, ["$scope", "settings", function ($scope, settingsFactory)
 		{
 			var naming = $scope.naming = settingsFactory.naming;
+			var nameTypes = { sequenced: "Use Sequenced Names", deflt: "Use Default Names" };
+			$scope.defaultNames = false;
+			$scope.nameType = nameTypes.deflt;
 			$scope.imageCount = 0;
 			$scope.borders = false;
 			$scope.canShow = false;
@@ -43,6 +47,12 @@ function renderItems(passedItems)
 				chrome.downloads.onDeterminingFilename.addListener(naming.renamer);
 				chrome.downloads.onCreated.addListener(function () { setTimeout($scope.apply, 10); });
 			})();
+			$scope.toggleNames = function()
+			{
+				var b = $scope.defaultNames = !$scope.defaultNames;
+				$scope.nameType = b ? nameTypes.sequenced : nameTypes.deflt;
+				settingsFactory.naming.useDefault = b;
+			}
 			$scope.sort = function (sortBy)
 			{
 				$scope.sortBy = sortBy;

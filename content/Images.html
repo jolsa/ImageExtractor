@@ -48,7 +48,10 @@
 		<button type="button" class="btn btn-primary" ng-click="saveAll()">
 			Save All
 		</button>
-		<button type="button" class="btn btn-primary" title="Reset download name sequencing for individual 'Save Image As' downloads" ng-hide="naming.cleared" ng-click="resetNames()">
+		<button style="margin-left: 10px;" type="button" class="btn" ng-class="defaultNames ? 'btn-primary' : ''" data-toggle="button" ng-click="toggleNames()">
+			{{ nameType }}
+		</button>
+		<button type="button" class="btn btn-primary" title="Reset download name sequencing for individual 'Save Image As' downloads" ng-hide="naming.cleared || defaultNames" ng-click="resetNames()">
 			Reset Name Sequence
 		</button>
 

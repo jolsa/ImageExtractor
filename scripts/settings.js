@@ -8,7 +8,7 @@
 	var settings = { errMsgTimeout: 3000, downloadFolder: "Extractor\\", maxOpen: 10, nameOrdLength: nameOrdLength };
 	naming =
 	{
-		ord: 0, dateStamp: null, ordLength: nameOrdLength, cleared: true,
+		ord: 0, dateStamp: null, ordLength: nameOrdLength, cleared: true, useDefault: false,
 		clear: function ()
 		{
 			var t = naming;
@@ -27,6 +27,11 @@
 		renamer: function (item, suggest)
 		{
 			var t = naming;
+			if (t.useDefault)
+			{
+				suggest();
+				return;
+			}
 			if (t.cleared)
 				t.reset();
 			//	Left-Pad number with 0
