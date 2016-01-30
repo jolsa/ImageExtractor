@@ -29,7 +29,7 @@
 			var t = naming;
 			if (t.useDefault)
 			{
-				suggest();
+				suggest({ filename: settings.downloadFolder + item.filename });
 				return;
 			}
 			if (t.cleared)

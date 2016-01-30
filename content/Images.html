@@ -34,21 +34,22 @@
 			<label class="btn btn-primary" ng-class="sortBy === 'height' ? 'active': ''">
 				<input type="radio" name="sortOptions" ng-click="sort('height')">By height
 			</label>
-			<label class="btn btn-primary" ng-class="sortBy === 'index' ? 'active': ''">
+			<label class="btn btn-primary" ng-class="sortBy === 'index' ? 'active': ''" title="Show images in their original order.">
 				<input type="radio" name="sortOptions" ng-click="sort('index')">By index
 			</label>
 		</div>
 
-		<button style="margin-left: 10px;" ng-disabled="!canShow" ng-click="showAll()" class="btn btn-primary">Show All Images</button>
+		<button style="margin-left: 10px;" ng-disabled="!canShow" ng-click="showAll()" class="btn btn-primary" title="Show images that have been hidden.">Show All Images</button>
 		<span style="margin-left: 10px;">{{ imageCount }}&nbsp;image<span ng-show="imageCount !== 1">s</span></span>
 
 		<button style="margin-left: 10px;" type="button" class="btn" ng-class="showBorders ? 'btn-primary' : ''" data-toggle="button" ng-click="toggleBorders()" >
 			<span ng-show="showBorders">No&nbsp;</span>Borders
 		</button>
-		<button type="button" class="btn btn-primary" ng-click="saveAll()">
+		<button type="button" class="btn btn-primary" ng-click="saveAll()" title="Save all images shown to 'Extractor' folder.">
 			Save All
 		</button>
-		<button style="margin-left: 10px;" type="button" class="btn" ng-class="defaultNames ? 'btn-primary' : ''" data-toggle="button" ng-click="toggleNames()">
+		<button style="margin-left: 10px;" type="button" class="btn" ng-class="defaultNames ? 'btn-primary' : ''" data-toggle="button" ng-click="toggleNames()"
+			title="Toggle between sequenced names and default image names.">
 			{{ nameType }}
 		</button>
 		<button type="button" class="btn btn-primary" title="Reset download name sequencing for individual 'Save Image As' downloads" ng-hide="naming.cleared || defaultNames" ng-click="resetNames()">
