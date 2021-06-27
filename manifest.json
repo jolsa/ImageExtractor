@@ -3,9 +3,9 @@
 
 	"name": "Image Retrieval",
 	"description": "Get Images from the current page",
-	"version": "1.0.2.7",
+	"version": "1.0.2.8",
 	"background": {
-		"scripts": [ "popup.js" ]
+		"scripts": [ "scripts/jquery-1.10.2.min.js", "scripts/angular.min.js", "popup.js" ]
 	},
 	"icons": {
 		"16": "icon16.png",

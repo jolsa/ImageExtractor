@@ -24,6 +24,7 @@
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
     <UseGlobalApplicationHostFile />
+    <Use64BitIISExpress />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -46,6 +47,7 @@
     <Content Include="440x280.png" />
     <Content Include="content\Images.html" />
     <Content Include="content\Images.js" />
+    <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="icon128.png" />
     <Content Include="icon16.png" />
     <Content Include="icon48.png" />
@@ -70,6 +72,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="ZipContent.cmd" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="fonts\glyphicons-halflings-regular.woff2" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

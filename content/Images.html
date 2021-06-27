@@ -11,6 +11,9 @@
 		.img { cursor: pointer; }
 		.imgBorder { border: 3px solid black; }
 		img:hover { outline: 1px solid black; }
+		.blocker { position: fixed; margin: 0; top: 0; left: 0; width: 100%; height: 100vh; background-color: rgba(80, 80, 80, 0.5); z-index: 10; }
+		.editor { margin: auto; margin-top: 10vh; background-color: white; color: black; height: 80vh; width: 80%; padding: 10px; }
+		textarea { width: 100%; height: calc(80vh - 55px); font-family: Consolas; font-size: 9pt; }
 	</style>
 </head>
 <body>
@@ -42,18 +45,21 @@
 		<button style="margin-left: 10px;" ng-disabled="!canShow" ng-click="showAll()" class="btn btn-primary" title="Show images that have been hidden.">Show All Images</button>
 		<span style="margin-left: 10px;">{{ imageCount }}&nbsp;image<span ng-show="imageCount !== 1">s</span></span>
 
-		<button style="margin-left: 10px;" type="button" class="btn" ng-class="showBorders ? 'btn-primary' : ''" data-toggle="button" ng-click="toggleBorders()" >
+		<button style="margin-left: 10px;" type="button" class="btn" ng-class="showBorders ? 'btn-primary' : ''" data-toggle="button" ng-click="toggleBorders()">
 			<span ng-show="showBorders">No&nbsp;</span>Borders
 		</button>
 		<button type="button" class="btn btn-primary" ng-click="saveAll()" title="Save all images shown to 'Extractor' folder.">
 			Save All
 		</button>
 		<button style="margin-left: 10px;" type="button" class="btn" ng-class="defaultNames ? 'btn-primary' : ''" data-toggle="button" ng-click="toggleNames()"
-			title="Toggle between sequenced names and default image names.">
+				title="Toggle between sequenced names and default image names.">
 			{{ nameType }}
 		</button>
 		<button type="button" class="btn btn-primary" title="Reset download name sequencing for individual 'Save Image As' downloads" ng-hide="naming.cleared || defaultNames" ng-click="resetNames()">
 			Reset Name Sequence
+		</button>
+		<button type="button" class="btn btn-primary" title="Show URL List" ng-click="showUrls()">
+			URL List
 		</button>
 
 		<div>Click an image to hide it.</div>
@@ -63,8 +69,21 @@
 				 ng-hide="img.hide"
 				 ng-src="{{ img.img }}" ng-attr-title="{{ img.w }} x {{ img.h }}, area = {{ img.w * img.h | number }}; [{{ img.ord + 1 }}] (Click to hide) {{ img.img }}"
 				 alt="img" data-original="{{ img.original }}"
-				 ng-click="img.hide = true; hideImage();"
-				 />
+				 ng-click="img.hide = true; hideImage();" />
+		</div>
+		<div ng-show="urlsVisible" class="blocker">
+			<div class="editor">
+				<div>
+					<textarea id="urlText" style="" ng-model="urls"></textarea>
+				</div>
+				<button class="btn btn-info" ng-disabled="!urls" ng-click="copyUrl()">
+					<span class="glyphicon glyphicon-copy"></span>Copy
+				</button>
+				<button class="btn btn-info" ng-click="urlsVisible = false;">
+					Close
+				</button>
+				<span ng-show="data.timedText" style="margin-left: 10px;">Copied!</span>
+			</div>
 		</div>
 	</div>
 	<script src="/scripts/jquery-1.10.2.min.js"></script>
