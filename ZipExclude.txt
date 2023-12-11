@@ -1,11 +1,12 @@
+\.crx
 \.git\\
-\.vs\\
-bin\\
-obj\\
 \.gitattributes
 \.gitignore
+\.pem
+\.vs\\
 440x280\.png
 exclude\.txt
-ImageExtractor\.
-ZipContent\.cmd
+ImageExtractor\.zip
+Notes\.txt
 Screenshot-640x400\.png
+ZipContent\.cmd

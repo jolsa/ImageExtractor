@@ -1,0 +1,4 @@
+Chrome developer dashboard: https://chrome.google.com/webstore/developer/dashboard
+Store URL: https://chromewebstore.google.com/detail/image-retrieval/pjdngenmhhmdjagmmojndgimleimiobp
+
+Submitted: 2023-12-11 14:00
