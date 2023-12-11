@@ -62,7 +62,7 @@
 			});
 		};
 		$scope.toNewPage = function () {
-			chrome.tabs.create({ url: chrome.extension.getURL('content/Images.html'), active: false }, function (tab) {
+			chrome.tabs.create({ url: 'content/Images.html', active: false }, function (tab) {
 				var selfTabId = tab.id;
 				chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
 					if (changeInfo.status === 'complete' && tabId === selfTabId) {
@@ -91,14 +91,14 @@
 			chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
 				var id = tabs[0].id;
 				//	Inject jQuery first
-				chrome.tabs.executeScript(id, { file: 'scripts/jquery-1.10.2.min.js' }, function () {
+				chrome.scripting.executeScript({ target: { tabId: id, allFrames: true }, files: ['scripts/jquery-1.10.2.min.js'] }, function () {
 					//	If we can't inject a script, show the message
 					if (chrome.runtime.lastError) {
 						$scope.showError(chrome.runtime.lastError.message);
 						return;
 					}
 					data.loading = true;
-					chrome.tabs.executeScript(id, { file: 'getImages.js' }, showImages);
+					chrome.scripting.executeScript({ target: { tabId: id, allFrames: true }, files: ['getImages.js'] }, showImages);
 				});
 			});
 		};
@@ -108,8 +108,7 @@
 		function showImages(response) {
 
 			var info = response[0];
-			var loc = info.location;
-			var images = info.imgs;
+			var images = info.result.imgs;
 
 			//	Get distinct list
 			(function () {

@@ -110,7 +110,7 @@ function copyToClipboard(elementId) {
 			$scope.copyUrl = function () {
 				$scope.timedText = true;
 				copyToClipboard(elementId);
-				$timeout(function () { data.timedText = false; }, 2000);
+				$timeout(function () { $scope.timedText = false; }, 2000);
 			};
 			$(document).keydown(function (e) {
 				if (e.which === 27) {
